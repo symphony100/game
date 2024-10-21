@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動体視力ゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        #game-area {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            background-color: #ffffff;
+            border: 2px solid #000;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        #target {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #score {
+            font-size: 24px;
+            margin-top: 10px;
+        }
+
+        #customization {
+            margin: 20px auto;
+        }
+
+        #customization label {
+            margin-right: 10px;
+        }
+
+        #start {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        #start:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>動体視力ゲーム</h1>
+
+    <div id="game-area">
+        <div id="target"></div>
+    </div>
+
+    <p id="score">スコア: 0</p>
+
+    <div id="customization">
+        <label for="speed">ターゲットの速度:</label>
+        <input type="number" id="speed" value="1000" min="100" max="3000"> ミリ秒<br><br>
+
+        <label for="size">ターゲットのサイズ:</label>
+        <input type="number" id="size" value="50" min="20" max="100"> ピクセル<br><br>
+    </div>
+
+    <button id="start">スタート</button>
+
+    <script>
+        // ゲームの状態を保持する変数
+        let score = 0;
+        let gameInterval;
+        let targetMoving = false;
+
+        // HTML要素を取得
+        const gameArea = document.getElementById('game-area');
+        const target = document.getElementById('target');
+        const scoreDisplay = document.getElementById('score');
+        const startButton = document.getElementById('start');
+        const speedInput = document.getElementById('speed');
+        const sizeInput = document.getElementById('size');
+
+        // ゲームエリアの幅と高さを取得
+        const gameAreaWidth = gameArea.offsetWidth;
+        const gameAreaHeight = gameArea.offsetHeight;
+
+        // ターゲットをランダムな位置に移動させる関数
+        function moveTarget() {
+            const x = Math.random() * (gameAreaWidth - target.offsetWidth);
+            const y = Math.random() * (gameAreaHeight - target.offsetHeight);
+            target.style.left = `${x}px`;
+            target.style.top = `${y}px`;
+        }
+
+        // スコアを増加させる関数
+        function incrementScore() {
+            score++;
+            scoreDisplay.textContent = `スコア: ${score}`;
+        }
+
+        // ターゲットがクリックされたときの処理
+        target.addEventListener('click', incrementScore);
+
+        // ゲーム開始時の処理
+        function startGame() {
+            if (targetMoving) return;  // 二重スタート防止
+            targetMoving = true;
+
+            // スコアの初期化
+            score = 0;
+            scoreDisplay.textContent = 'スコア: 0';
+
+            // ターゲットのサイズと速度を取得して適用
+            const speed = parseInt(speedInput.value);
+            const size = parseInt(sizeInput.value);
+            target.style.width = `${size}px`;
+            target.style.height = `${size}px`;
+
+            // ターゲットを一定間隔で動かす
+            gameInterval = setInterval(moveTarget, speed);
+        }
+
+        // ゲーム終了時の処理
+        function stopGame() {
+            clearInterval(gameInterval);
+            targetMoving = false;
+        }
+
+        // ゲームスタートボタンが押されたときの処理
+        startButton.addEventListener('click', () => {
+            stopGame();
+            startGame();
+        });
+
+    </script>
+</body>
+</html>
