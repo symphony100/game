@@ -2,10 +2,7 @@
 <html lang="ja">
 <head>
     <link rel="icon" type="image/x-icon" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png"><link rel="sympony" sizes="180x180" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png">　
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>スライディングパズルゲーム</title>
+<title>AI搭載スライディングパズルゲーム</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,23 +37,32 @@
             background-color: #f0f0f0;
             cursor: default;
         }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
-    <h1>スライディングパズルゲーム</h1>
+    <h1>AI搭載スライディングパズルゲーム</h1>
     <div id="rules">
         <p><strong>ルール説明:</strong></p>
         <p>1から8までのタイルを、空白タイルとスライドさせて並べます。</p>
         <p>タイルは隣接する空白のスペースとスライドできます。</p>
-        <p>正しい順序に並べるとゲームクリアです！</p>
+        <p>「AIで解く」ボタンで、AIがアニメーションしながら解きます。「AIストップ」ボタンで停止可能です。</p>
     </div>
     <div id="puzzle"></div>
     <button onclick="resetGame()">リセット</button>
+    <button onclick="startAI()">AIで解く</button>
+    <button onclick="stopAI()">AIストップ</button>
     
     <script>
         const puzzleElement = document.getElementById('puzzle');
         let tiles = [1, 2, 3, 4, 5, 6, 7, 8, ''];
-        
+        let aiInterval = null;
+
+        // タイルをランダムにシャッフルする関数
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -65,6 +71,7 @@
             return array;
         }
 
+        // パズルを描画する関数
         function drawPuzzle() {
             puzzleElement.innerHTML = '';
             tiles.forEach((tile, index) => {
@@ -76,6 +83,7 @@
             });
         }
 
+        // タイルがクリックされたときの処理
         function handleTileClick(index) {
             const emptyIndex = tiles.indexOf('');
             const validMoves = [index - 1, index + 1, index - 3, index + 3];
@@ -89,18 +97,58 @@
             }
         }
 
+        // 勝利判定
         function checkWin() {
             if (tiles.join('') === '12345678') {
                 alert('おめでとう！パズルを完成しました！');
             }
         }
 
+        // ゲームをリセットする関数
         function resetGame() {
+            if (aiInterval) {
+                clearInterval(aiInterval);
+                aiInterval = null;
+            }
             tiles = shuffle([1, 2, 3, 4, 5, 6, 7, 8, '']);
             drawPuzzle();
         }
 
-        resetGame(); // ゲームを開始
+        // AIで解く関数
+        function startAI() {
+            if (aiInterval) return;  // AIが既に動いていたら何もしない
+            const moves = [[1, 2, 3, 4, 5, 6, 7, 8, '']];  // 完成状態の定義
+
+            aiInterval = setInterval(() => {
+                const emptyIndex = tiles.indexOf('');
+                const possibleMoves = [emptyIndex - 1, emptyIndex + 1, emptyIndex - 3, emptyIndex + 3].filter(move => tiles[move] !== undefined);
+
+                // ランダムに隣接タイルを選んでスライドさせる
+                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                tiles[emptyIndex] = tiles[randomMove];
+                tiles[randomMove] = '';
+                drawPuzzle();
+                
+                // パズルが完成したかを確認
+                if (tiles.join('') === '12345678') {
+                    clearInterval(aiInterval);
+                    alert('AIがパズルを解きました！');
+                }
+            }, 500); // 0.5秒ごとにタイルをスライド
+        }
+
+        // AIを停止する関数
+        function stopAI() {
+            if (aiInterval) {
+                clearInterval(aiInterval);
+                aiInterval = null;
+                alert('AIを停止しました。');
+            }
+        }
+
+        // ゲーム開始時にシャッフルしてパズルを描画
+        resetGame();
     </script>
 </body>
 </html>
+
