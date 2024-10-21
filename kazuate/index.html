@@ -27,8 +27,8 @@
 
     <h1>数当てゲーム</h1>
     <div id="game">
-        <p>1から100までの数字を当ててください！</p>
-        <input type="number" id="guessField" placeholder="数字を入力" min="1" max="100">
+        <p>1から100までの数字を当ててみてください。</p>
+        <input type="number" id="guessField" placeholder="半角数字を入力" min="1" max="100">
         <button onclick="checkGuess()">予想する</button>
         <p id="message"></p>
         <p id="guesses"></p>
@@ -58,7 +58,7 @@ function checkGuess() {
 
     // 予想が正しいかどうかを確認
     if (userGuess === randomNumber) {
-        messageElement.textContent = `おめでとう！正解は${randomNumber}でした！ ${guessCount}回で正解しました。`;
+        messageElement.textContent = `おめでとうございます。正解は${randomNumber}でした！ ${guessCount}回で正解しました。`;
         document.getElementById('guessField').disabled = true;
     } else if (userGuess < randomNumber) {
         messageElement.textContent = 'もっと大きい数字です。';
@@ -75,6 +75,8 @@ function checkGuess() {
 
 
 	</script>
-
+<h2><center>ランキングＴＯＰ３</h2>
+<p>１位　ペンギ　５回<br>
+</p>
 </body>
 </html>
