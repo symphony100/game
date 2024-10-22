@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <link rel="icon" type="image/x-icon" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png"><link rel="sympony" sizes="180x180" href="https://static.wixstatic.com/media/669165_89484848ada942a39a0db93ecdd66446~mv2.png/v1/fill/w_280,h_280,al_c,lg_1,q_85,enc_auto/669165_89484848ada942a39a0db93ecdd66446~mv2.png">　
-<title>AI搭載スライディングパズルゲーム</title>
+    <title>高速AI搭載スライディングパズルゲーム</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,16 +45,16 @@
     </style>
 </head>
 <body>
-    <h1>AI搭載スライディングパズルゲーム</h1>
+    <h1>高速AI搭載スライディングパズルゲーム</h1>
     <div id="rules">
         <p><strong>ルール説明:</strong></p>
         <p>1から8までのタイルを、空白タイルとスライドさせて並べます。</p>
-        <p>タイルは隣接する空白のスペースとスライドできます。</p>
-        <p>「AIで解く」ボタンで、AIがアニメーションしながら解きます。「AIストップ」ボタンで停止可能です。</p>
+        <p>「AIで解く」ボタンを押すと、高速でAIがパズルを解きます。</p>
+        <p>「AIストップ」ボタンで、AIの動作を途中で停止できます。</p>
     </div>
     <div id="puzzle"></div>
     <button onclick="resetGame()">リセット</button>
-    <button onclick="startAI()">AIで解く</button>
+    <button onclick="startFastAI()">AIで解く（高速）</button>
     <button onclick="stopAI()">AIストップ</button>
     
     <script>
@@ -114,11 +114,9 @@
             drawPuzzle();
         }
 
-        // AIで解く関数
-        function startAI() {
+        // 高速でAIが解く関数
+        function startFastAI() {
             if (aiInterval) return;  // AIが既に動いていたら何もしない
-            const moves = [[1, 2, 3, 4, 5, 6, 7, 8, '']];  // 完成状態の定義
-
             aiInterval = setInterval(() => {
                 const emptyIndex = tiles.indexOf('');
                 const possibleMoves = [emptyIndex - 1, emptyIndex + 1, emptyIndex - 3, emptyIndex + 3].filter(move => tiles[move] !== undefined);
@@ -134,7 +132,7 @@
                     clearInterval(aiInterval);
                     alert('AIがパズルを解きました！');
                 }
-            }, 500); // 0.5秒ごとにタイルをスライド
+            }, 100); // 0.1秒ごとにタイルをスライド
         }
 
         // AIを停止する関数
@@ -151,4 +149,5 @@
     </script>
 </body>
 </html>
+
 
