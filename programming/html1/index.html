@@ -1,185 +1,37 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="HTML初級クイズ">
-    <meta name="author" content="あなたの名前">
-    <title>HTML 初級クイズゲーム</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .quiz-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            text-align: center;
-        }
-        .question {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #1e90ff;
-            color: white;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #4682b4;
-        }
-        #feedback {
-            margin-top: 20px;
-            font-size: 18px;
-        }
-        #score {
-            margin-top: 20px;
-            font-size: 20px;
-            color: #ff8c00;
-        }
-        #restartButton {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            background-color: #32cd32;
-            color: white;
-        }
-        #restartButton:hover {
-            background-color: #228b22;
-        }
-    </style>
-</head>
-<body>
-
-    <h1>HTML 初級クイズゲーム</h1>
-    <div class="quiz-container">
-        <div class="question" id="question">ここに質問が表示されます</div>
-        <div class="options" id="options"></div>
-        <div id="feedback"></div>
-        <div id="score">現在のスコア: 0</div> <!-- スコアをここに表示 -->
-        <button id="restartButton" style="display: none;" onclick="restartGame()">また挑戦する</button> <!-- リスタートボタン -->
-    </div>
-
-    <script>
-        const quizData = [
-            {
-                question: "<p>タグは何のために使われますか？",
-                options: ["段落を作る", "リンクを作る", "表を作る", "フォームを作る"],
-                answer: "段落を作る"
-            },
-            {
-                question: "<h1>タグは何のために使われますか？",
-                options: ["見出し1を作る", "段落を作る", "リンクを作る", "リストを作る"],
-                answer: "見出し1を作る"
-            },
-            {
-                question: "<a>タグは何のために使われますか？",
-                options: ["リンクを作る", "画像を表示する", "段落を作る", "フォームを作る"],
-                answer: "リンクを作る"
-            },
-            {
-                question: "<img>タグの役割は何ですか？",
-                options: ["画像を表示する", "段落を作る", "テーブルを作る", "リストを作る"],
-                answer: "画像を表示する"
-            },
-            {
-                question: "<ul>タグは何のために使われますか？",
-                options: ["順不同リストを作る", "順序付きリストを作る", "リンクを作る", "段落を作る"],
-                answer: "順不同リストを作る"
-            }
-        ];
-
-        const totalPoints = 100; // 満点
-        const pointsPerQuestion = totalPoints / quizData.length; // 各問題の点数
-
-        let currentQuestionIndex = 0;
-        let score = 0;
-
-        const questionElement = document.getElementById("question");
-        const optionsElement = document.getElementById("options");
-        const feedbackElement = document.getElementById("feedback");
-        const scoreElement = document.getElementById("score");
-        const restartButton = document.getElementById("restartButton");
-
-        function loadQuestion() {
-            const currentQuestion = quizData[currentQuestionIndex];
-            questionElement.innerHTML = currentQuestion.question;
-            optionsElement.innerHTML = "";
-
-            currentQuestion.options.forEach(option => {
-                const button = document.createElement("button");
-                button.textContent = option;
-                button.onclick = () => checkAnswer(option);
-                optionsElement.appendChild(button);
-            });
-
-            feedbackElement.textContent = "";
-        }
-
-        function checkAnswer(selectedAnswer) {
-            const currentQuestion = quizData[currentQuestionIndex];
-            if (selectedAnswer === currentQuestion.answer) {
-                feedbackElement.textContent = `正解！ +${pointsPerQuestion}点`;
-                feedbackElement.style.color = "green";
-                score += pointsPerQuestion;
-            } else {
-                feedbackElement.textContent = `不正解... 正しい答えは「${currentQuestion.answer}」です。`;
-                feedbackElement.style.color = "red";
-            }
-
-            // スコアの更新
-            scoreElement.textContent = `現在のスコア: ${score.toFixed(2)}点`;
-
-            currentQuestionIndex++;
-            setTimeout(() => {
-                if (currentQuestionIndex < quizData.length) {
-                    loadQuestion();
-                } else {
-                    endGame();
-                }
-            }, 1000);
-        }
-
-        function endGame() {
-            questionElement.textContent = "クイズ終了！";
-            optionsElement.innerHTML = "";
-            feedbackElement.textContent = `最終スコア: ${score.toFixed(2)}点 / ${totalPoints}点`;
-            restartButton.style.display = "inline-block"; // 「また挑戦する」ボタンを表示
-        }
-
-        function restartGame() {
-            currentQuestionIndex = 0;
-            score = 0;
-            scoreElement.textContent = `現在のスコア: ${score}`;
-            feedbackElement.textContent = "";
-            restartButton.style.display = "none"; // ボタンを非表示に
-            loadQuestion();
-        }
-
-        loadQuestion();
-    </script>
-
-</body>
-</html>
+const quizData = [
+    {
+        question: "<p>タグの主な役割は何ですか？",
+        options: ["段落を作る", "見出しを作る", "リンクを作る", "フォームを作る"],
+        answer: "段落を作る"
+    },
+    {
+        question: "<h1>タグを使うとどうなりますか？",
+        options: ["見出し1が作られる", "見出し3が作られる", "段落が作られる", "画像が表示される"],
+        answer: "見出し1が作られる"
+    },
+    {
+        question: "<a>タグの使い方で正しいのはどれですか？",
+        options: ["リンクを作成する", "ボタンを作成する", "画像を表示する", "リストを作成する"],
+        answer: "リンクを作成する"
+    },
+    {
+        question: "<img>タグの正しい使い方は何ですか？",
+        options: ["画像を表示する", "段落を作成する", "フォームを作成する", "ボタンを作成する"],
+        answer: "画像を表示する"
+    },
+    {
+        question: "<ul>タグでできることは何ですか？",
+        options: ["順不同リストを作成する", "番号付きリストを作成する", "リンクを作成する", "画像を表示する"],
+        answer: "順不同リストを作成する"
+    },
+    {
+        question: "HTMLで<strong>タグの使い道は何ですか？",
+        options: ["太字で強調する", "リンクを作成する", "段落を作成する", "表を作成する"],
+        answer: "太字で強調する"
+    },
+    {
+        question: "フォームでユーザーからの入力を受け取るタグはどれですか？",
+        options: ["<input>", "<form>", "<div>", "<table>"],
+        answer: "<input>"
+    }
+];
