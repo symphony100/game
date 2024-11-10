@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HTML上級クイズ">
+    <meta name="author" content="あなたの名前">
+    <title>HTML 上級クイズゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .quiz-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            text-align: center;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #1e90ff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #4682b4;
+        }
+        #feedback {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #ff8c00;
+        }
+        #restartButton {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #32cd32;
+            color: white;
+        }
+        #restartButton:hover {
+            background-color: #228b22;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>HTML 上級クイズゲーム</h1>
+    <div class="quiz-container">
+        <div class="question" id="question">ここに質問が表示されます</div>
+        <div class="options" id="options"></div>
+        <div id="feedback"></div>
+        <div id="score">現在のスコア: 0</div> <!-- スコアをここに表示 -->
+        <button id="restartButton" style="display: none;" onclick="restartGame()">また挑戦する</button> <!-- リスタートボタン -->
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "<meta>タグのname属性に「viewport」を設定すると何ができますか？",
+                options: ["モバイル端末向けのレイアウトを調整", "SEO対策に使う", "サイトの読み込み速度を上げる", "ページの背景色を変更"],
+                answer: "モバイル端末向けのレイアウトを調整"
+            },
+            {
+                question: "<link>タグで使われるrel属性の「stylesheet」は何を意味しますか？",
+                options: ["外部CSSファイルをリンクする", "ページの説明文を設定する", "サイトのタイトルを設定する", "画像をリンクする"],
+                answer: "外部CSSファイルをリンクする"
+            },
+            {
+                question: "DOCTYPE宣言を使う理由は何ですか？",
+                options: ["HTMLのバージョンを指定する", "SEOを改善する", "ページのデザインを調整する", "ブラウザにJavaScriptを読み込ませる"],
+                answer: "HTMLのバージョンを指定する"
+            },
+            {
+                question: "HTML5で新たに追加されたフォームの入力タイプで、メールアドレスを入力するものはどれですか？",
+                options: ["email", "tel", "url", "password"],
+                answer: "email"
+            },
+            {
+                question: "HTMLの<video>タグで、自動再生を指定する属性はどれですか？",
+                options: ["autoplay", "loop", "controls", "poster"],
+                answer: "autoplay"
+            }
+        ];
+
+        const totalPoints = 100; // 満点
+        const pointsPerQuestion = totalPoints / quizData.length; // 各問題の点数
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questionElement = document.getElementById("question");
+        const optionsElement = document.getElementById("options");
+        const feedbackElement = document.getElementById("feedback");
+        const scoreElement = document.getElementById("score");
+        const restartButton = document.getElementById("restartButton");
+
+        function loadQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionElement.innerHTML = currentQuestion.question;
+            optionsElement.innerHTML = "";
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                optionsElement.appendChild(button);
+            });
+
+            feedbackElement.textContent = "";
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const currentQuestion = quizData[currentQuestionIndex];
+            if (selectedAnswer === currentQuestion.answer) {
+                feedbackElement.textContent = `正解！ +${pointsPerQuestion}点`;
+                feedbackElement.style.color = "green";
+                score += pointsPerQuestion;
+            } else {
+                feedbackElement.textContent = `不正解... 正しい答えは「${currentQuestion.answer}」です。`;
+                feedbackElement.style.color = "red";
+            }
+
+            // スコアの更新
+            scoreElement.textContent = `現在のスコア: ${score.toFixed(2)}点`;
+
+            currentQuestionIndex++;
+            setTimeout(() => {
+                if (currentQuestionIndex < quizData.length) {
+                    loadQuestion();
+                } else {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            questionElement.textContent = "クイズ終了！";
+            optionsElement.innerHTML = "";
+            feedbackElement.textContent = `最終スコア: ${score.toFixed(2)}点 / ${totalPoints}点`;
+            restartButton.style.display = "inline-block"; // 「また挑戦する」ボタンを表示
+        }
+
+        function restartGame() {
+            currentQuestionIndex = 0;
+            score = 0;
+            scoreElement.textContent = `現在のスコア: ${score}`;
+            feedbackElement.textContent = "";
+            restartButton.style.display = "none"; // ボタンを非表示に
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+
+</body>
+</html>
