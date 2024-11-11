@@ -78,41 +78,41 @@
         <div class="question" id="question">ここに質問が表示されます</div>
         <div class="options" id="options"></div>
         <div id="feedback"></div>
-        <div id="score">現在のスコア: 0</div> <!-- スコアをここに表示 -->
-        <button id="restartButton" style="display: none;" onclick="restartGame()">また挑戦する</button> <!-- リスタートボタン -->
+        <div id="score">現在のスコア: 0</div>
+        <button id="restartButton" style="display: none;" onclick="restartGame()">また挑戦する</button>
     </div>
 
     <script>
         const quizData = [
             {
-                question: "<div>タグは何のために使われますか？",
+                question: "<code>&lt;div&gt;</code> タグは何のために使われますか？",
                 options: ["インライン要素", "ブロック要素", "画像を埋め込む", "フォームを作成"],
                 answer: "ブロック要素"
             },
             {
-                question: "<span>タグは何のために使われますか？",
+                question: "<code>&lt;span&gt;</code> タグは何のために使われますか？",
                 options: ["インライン要素", "リンクを作成", "ブロック要素", "表を作成"],
                 answer: "インライン要素"
             },
             {
-                question: "<form>タグで、フォームの送信方法を指定する属性はどれですか？",
+                question: "<code>&lt;form&gt;</code> タグで、フォームの送信方法を指定する属性はどれですか？",
                 options: ["action", "method", "input", "value"],
                 answer: "method"
             },
             {
-                question: "<input>タグのtype属性で、ラジオボタンを作成するにはどの値を指定しますか？",
+                question: "<code>&lt;input&gt;</code> タグの type 属性で、ラジオボタンを作成するにはどの値を指定しますか？",
                 options: ["radio", "checkbox", "button", "text"],
                 answer: "radio"
             },
             {
-                question: "<table>タグで、列のヘッダーを指定するタグはどれですか？",
-                options: ["<tr>", "<th>", "<td>", "<thead>"],
-                answer: "<th>"
+                question: "<code>&lt;table&gt;</code> タグで、列のヘッダーを指定するタグはどれですか？",
+                options: ["<code>&lt;tr&gt;</code>", "<code>&lt;th&gt;</code>", "<code>&lt;td&gt;</code>", "<code>&lt;thead&gt;</code>"],
+                answer: "<code>&lt;th&gt;</code>"
             }
         ];
 
-        const totalPoints = 100; // 満点
-        const pointsPerQuestion = totalPoints / quizData.length; // 各問題の点数
+        const totalPoints = 100;
+        const pointsPerQuestion = totalPoints / quizData.length;
 
         let currentQuestionIndex = 0;
         let score = 0;
@@ -149,7 +149,6 @@
                 feedbackElement.style.color = "red";
             }
 
-            // スコアの更新
             scoreElement.textContent = `現在のスコア: ${score.toFixed(2)}点`;
 
             currentQuestionIndex++;
@@ -166,7 +165,7 @@
             questionElement.textContent = "クイズ終了！";
             optionsElement.innerHTML = "";
             feedbackElement.textContent = `最終スコア: ${score.toFixed(2)}点 / ${totalPoints}点`;
-            restartButton.style.display = "inline-block"; // 「また挑戦する」ボタンを表示
+            restartButton.style.display = "inline-block";
         }
 
         function restartGame() {
@@ -174,7 +173,7 @@
             score = 0;
             scoreElement.textContent = `現在のスコア: ${score}`;
             feedbackElement.textContent = "";
-            restartButton.style.display = "none"; // ボタンを非表示に
+            restartButton.style.display = "none";
             loadQuestion();
         }
 
