@@ -78,19 +78,19 @@
         <div class="question" id="question">ここに質問が表示されます</div>
         <div class="options" id="options"></div>
         <div id="feedback"></div>
-        <div id="score">現在のスコア: 0</div> <!-- スコアをここに表示 -->
-        <button id="restartButton" style="display: none;" onclick="restartGame()">また挑戦する</button> <!-- リスタートボタン -->
+        <div id="score">現在のスコア: 0</div>
+        <button id="restartButton" style="display: none;" onclick="restartGame()">また挑戦する</button>
     </div>
 
     <script>
         const quizData = [
             {
-                question: "<meta>タグのname属性に「viewport」を設定すると何ができますか？",
+                question: "<code>&lt;meta&gt;</code>タグのname属性に「viewport」を設定すると何ができますか？",
                 options: ["モバイル端末向けのレイアウトを調整", "SEO対策に使う", "サイトの読み込み速度を上げる", "ページの背景色を変更"],
                 answer: "モバイル端末向けのレイアウトを調整"
             },
             {
-                question: "<link>タグで使われるrel属性の「stylesheet」は何を意味しますか？",
+                question: "<code>&lt;link&gt;</code>タグで使われるrel属性の「stylesheet」は何を意味しますか？",
                 options: ["外部CSSファイルをリンクする", "ページの説明文を設定する", "サイトのタイトルを設定する", "画像をリンクする"],
                 answer: "外部CSSファイルをリンクする"
             },
@@ -105,14 +105,14 @@
                 answer: "email"
             },
             {
-                question: "HTMLの<video>タグで、自動再生を指定する属性はどれですか？",
+                question: "HTMLの<code>&lt;video&gt;</code>タグで、自動再生を指定する属性はどれですか？",
                 options: ["autoplay", "loop", "controls", "poster"],
                 answer: "autoplay"
             }
         ];
 
-        const totalPoints = 100; // 満点
-        const pointsPerQuestion = totalPoints / quizData.length; // 各問題の点数
+        const totalPoints = 100;
+        const pointsPerQuestion = totalPoints / quizData.length;
 
         let currentQuestionIndex = 0;
         let score = 0;
@@ -149,7 +149,6 @@
                 feedbackElement.style.color = "red";
             }
 
-            // スコアの更新
             scoreElement.textContent = `現在のスコア: ${score.toFixed(2)}点`;
 
             currentQuestionIndex++;
@@ -166,7 +165,7 @@
             questionElement.textContent = "クイズ終了！";
             optionsElement.innerHTML = "";
             feedbackElement.textContent = `最終スコア: ${score.toFixed(2)}点 / ${totalPoints}点`;
-            restartButton.style.display = "inline-block"; // 「また挑戦する」ボタンを表示
+            restartButton.style.display = "inline-block";
         }
 
         function restartGame() {
@@ -174,7 +173,7 @@
             score = 0;
             scoreElement.textContent = `現在のスコア: ${score}`;
             feedbackElement.textContent = "";
-            restartButton.style.display = "none"; // ボタンを非表示に
+            restartButton.style.display = "none";
             loadQuestion();
         }
 
