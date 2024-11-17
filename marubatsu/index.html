@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>〇✕ゲーム</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #282c34;
+            color: #ffffff;
+        }
+        h1 {
+            color: #61dafb;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            grid-template-rows: repeat(3, 120px);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            background-color: #3a3f47;
+            color: #61dafb;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+        .cell:hover {
+            background-color: #4a4f57;
+            transform: scale(1.1);
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            color: #ffd700;
+            animation: fadeIn 0.5s ease;
+        }
+        #restartButton {
+            margin-top: 20px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #fff;
+            background-color: #61dafb;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        #restartButton:hover {
+            background-color: #21a1f1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>〇✕ゲーム</h1>
+    <div class="board" id="board"></div>
+    <div class="message" id="message"></div>
+    <button id="restartButton" onclick="restartGame()" style="display: none;">リスタート</button>
+
+    <script>
+        const boardElement = document.getElementById("board");
+        const messageElement = document.getElementById("message");
+        const restartButton = document.getElementById("restartButton");
+
+        let board = Array(9).fill(null);
+        let currentPlayer = "X";
+        let gameActive = true;
+
+        function createBoard() {
+            boardElement.innerHTML = "";
+            board.forEach((cell, index) => {
+                const cellElement = document.createElement("div");
+                cellElement.classList.add("cell");
+                cellElement.textContent = cell;
+                cellElement.addEventListener("click", () => handleCellClick(index));
+                boardElement.appendChild(cellElement);
+            });
+        }
+
+        function handleCellClick(index) {
+            if (board[index] || !gameActive) return;
+
+            board[index] = currentPlayer;
+            createBoard();
+            checkResult();
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+        }
+
+        function checkResult() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                [0, 4, 8], [2, 4, 6]             // diagonals
+            ];
+
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    gameActive = false;
+                    messageElement.textContent = `${board[a]} の勝ちです！`;
+                    restartButton.style.display = "block";
+                    return;
+                }
+            }
+
+            if (board.every(cell => cell)) {
+                gameActive = false;
+                messageElement.textContent = "引き分けです！";
+                restartButton.style.display = "block";
+            }
+        }
+
+        function restartGame() {
+            board = Array(9).fill(null);
+            currentPlayer = "X";
+            gameActive = true;
+            messageElement.textContent = "";
+            restartButton.style.display = "none";
+            createBoard();
+        }
+
+        createBoard();
+    </script>
+
+</body>
+</html>
