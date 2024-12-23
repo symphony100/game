@@ -18,8 +18,10 @@
 
         .door-container {
             position: relative;
-            width: 300px;
-            height: 400px;
+            width: 90%;
+            max-width: 400px;
+            height: 60vh;
+            max-height: 400px;
             background-color: #d3d3d3;
             border-radius: 10px;
             overflow: hidden;
@@ -34,35 +36,29 @@
             width: 50%;
             height: 100%;
             background-color: #e6e6e6;
-            border: 3px solid black; /* 黒いふち */
+            border: 2px solid black;
             transition: all 3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         .door.left {
             left: 0;
             z-index: 1;
-            top: -1%;
         }
 
         .door.right {
             right: 0;
             z-index: 1;
-            top: -1%;
         }
 
-        /* 窓ガラス */
         .glass {
             position: absolute;
             top: 20%;
             left: 10%;
             width: 80%;
             height: 50%;
-            background-color: rgba(173, 216, 230, 0.7); /* 水色のガラス */
+            background-color: rgba(173, 216, 230, 0.7);
             border-radius: 5px;
-            border: 2px solid black; /* 黒いふち */
+            border: 2px solid black;
             z-index: 2;
         }
 
@@ -74,11 +70,14 @@
             z-index: 3;
         }
 
-        .button-container {
-            position: absolute;
-            bottom: 20px;
-            text-align: center;
+        .line-color .half {
             width: 100%;
+            height: 50%;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
         }
 
         button {
@@ -97,7 +96,7 @@
         }
 
         .selector {
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -107,25 +106,27 @@
         <label for="train-line">路線を選択:</label>
         <select id="train-line">
             <option value="keihin">京浜東北線</option>
-            <option value="chuo">中央・総武線（各駅停車）</option>
-            <option value="tokaido">東海道線（JR東日本）</option>
+            <option value="chuo">中央・総武線</option>
+            <option value="tokaido">東海道線（東日本）</option>
             <option value="saikyo">埼京線</option>
             <option value="keiyo">京葉線</option>
-            <option value="yokosuka">横須賀線</option>
+            <option value="yokosuka">横須賀線・総武快速線</option>
             <option value="yokohama">横浜線</option>
             <option value="yamanote">山手線</option>
+            <option value="musashino">武蔵野線</option>
             <option value="tozai">東京メトロ東西線</option>
             <option value="tokaido-tokai">東海道線（JR東海）</option>
+            <option value="keikyu">京急線</option>
         </select>
     </div>
 
     <div class="door-container">
         <div class="door left">
-            <div class="glass"></div> <!-- 窓ガラス -->
+            <div class="glass"></div>
             <div class="line-color"></div>
         </div>
         <div class="door right">
-            <div class="glass"></div> <!-- 窓ガラス -->
+            <div class="glass"></div>
             <div class="line-color"></div>
         </div>
     </div>
@@ -134,10 +135,10 @@
         <button id="toggle-door">ドアを開ける</button>
     </div>
 
+    <!-- 音声ファイル -->
     <audio id="door-sound" src="door-open-close-sound.mp3" preload="auto"></audio>
-    <audio id="tokaido-tokai-sound" src="https://symphony100.github.io/game/train/JR%E6%9D%B1%E6%B5%B7%E3%83%89%E3%82%A2.mp3" preload="auto"></audio>
-    <audio id="yokosuka-sound" src="" preload="auto"></audio>
-    <audio id="yokohama-sound" src="yokohama-door-sound.mp3" preload="auto"></audio>
+    <audio id="keikyu-sound" src="keikyu-door-sound.mp3" preload="auto"></audio>
+    <audio id="musashino-sound" src="musashino-door-sound.mp3" preload="auto"></audio>
 
     <script>
         let isDoorOpen = false;
@@ -147,34 +148,59 @@
         const rightDoor = document.querySelector('.door.right');
         const lineSelector = document.getElementById('train-line');
         const doorSound = document.getElementById('door-sound');
-        const tokaidoTokaiSound = document.getElementById('tokaido-tokai-sound');
-        const yokosukaSound = document.getElementById('yokosuka-sound');
-        const yokohamaSound = document.getElementById('yokohama-sound');
+        const keikyuSound = document.getElementById('keikyu-sound');
+        const musashinoSound = document.getElementById('musashino-sound');
 
+        // ラインカラーとドアの色更新関数
         function updateLineColor(line) {
-            const colors = {
-                keihin: ['#007bb8'], // 青
-                chuo: ['#ffd400'], // 黄色
-                tokaido: ['#ff8c00', '#008000'], // オレンジと緑
-                saikyo: ['#008000'], // 緑
-                keiyo: ['#ff4500'], // 赤
-                yokosuka: ['#ffffff', '#007bb8'], // 白の下に青
-                yokohama: ['#9acd32', '#008000'], // 黄緑の下に緑
-                yamanote: ['#32cd32'], // 緑
-                tozai: ['#0000ff', '#87ceeb'], // 青と水色
-                'tokaido-tokai': ['#ff8c00'], // オレンジ
+            const singleColors = {
+                keihin: '#007bb8',    // 青
+                chuo: '#ffd400',      // 黄色
+                tokaido: null,        // 東海道線（2色）
+                saikyo: '#008000',    // 緑
+                keiyo: '#ff4500',     // 赤
+                yokosuka: null,       // 横須賀線・総武快速線（2色）
+                yokohama: '#9acd32',  // 黄緑
+                yamanote: '#32cd32',  // 山手線 緑色
+                musashino: '#ffa500', // オレンジ
+                tozai: '#0000ff',     // 青
+                'tokaido-tokai': '#ff8c00', // オレンジ
+                keikyu: '#ff0000'     // 赤
             };
+
+            const multiColors = {
+                tokaido: ['#ff8c00', '#008000'], // オレンジ・緑
+                yokosuka: ['#ffffff', '#007bb8'] // 白・青
+            };
+
+            leftDoor.style.background = '#e6e6e6';
+            rightDoor.style.background = '#e6e6e6';
+
+            if (line === 'yamanote') {
+                // 山手線のドアを黄緑に設定
+                leftDoor.style.background = '#32cd32';
+                rightDoor.style.background = '#32cd32';
+            }
 
             const leftLine = leftDoor.querySelector('.line-color');
             const rightLine = rightDoor.querySelector('.line-color');
-            const selectedColors = colors[line];
 
-            if (selectedColors.length === 1) {
-                leftLine.style.background = selectedColors[0];
-                rightLine.style.background = selectedColors[0];
-            } else {
-                leftLine.style.background = `linear-gradient(to bottom, ${selectedColors[0]}, ${selectedColors[1]})`;
-                rightLine.style.background = `linear-gradient(to bottom, ${selectedColors[0]}, ${selectedColors[1]})`;
+            leftLine.innerHTML = '';
+            rightLine.innerHTML = '';
+
+            if (singleColors[line]) {
+                leftLine.style.background = singleColors[line];
+                rightLine.style.background = singleColors[line];
+            } else if (multiColors[line]) {
+                const [color1, color2] = multiColors[line];
+                leftLine.innerHTML = `
+                    <div class="half" style="background: ${color1}"></div>
+                    <div class="half" style="background: ${color2}"></div>
+                `;
+                rightLine.innerHTML = `
+                    <div class="half" style="background: ${color1}"></div>
+                    <div class="half" style="background: ${color2}"></div>
+                `;
             }
         }
 
@@ -189,15 +215,13 @@
                 toggleButton.textContent = 'ドアを閉める';
             }
 
-            // ドアの音を再生
-            if (lineSelector.value === 'tokaido-tokai') {
-                tokaidoTokaiSound.play(); // JR東海 東海道線の音
-            } else if (lineSelector.value === 'yokosuka') {
-                yokosukaSound.play(); // 横須賀線の音
-            } else if (lineSelector.value === 'yokohama') {
-                yokohamaSound.play(); // 横浜線の音
+            // 音声ファイルの再生
+            if (lineSelector.value === 'keikyu') {
+                keikyuSound.play(); // 京急線専用音
+            } else if (lineSelector.value === 'musashino') {
+                musashinoSound.play(); // 武蔵野線専用音
             } else {
-                doorSound.play(); // 他の路線の音
+                doorSound.play(); // 他の音
             }
 
             isDoorOpen = !isDoorOpen;
@@ -207,10 +231,9 @@
             updateLineColor(lineSelector.value);
         });
 
-        // 初期化
-
+        // 初期表示
         updateLineColor(lineSelector.value);
     </script>
 
 </body>
-</html>
+</html> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
