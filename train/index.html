@@ -3,237 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ドア開閉シミュレーション</title>
+    <title>鉄道シュミレーター</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            background-color: #a2d8f3;
-            flex-direction: column;
+            padding: 0;
         }
 
-        .door-container {
+        /* 背景画像とタイトル */
+        .header {
             position: relative;
-            width: 90%;
-            max-width: 400px;
-            height: 60vh;
-            max-height: 400px;
-            background-color: #d3d3d3;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-image: url('https://symphony100.github.io/game/train/train-yamanote-line.png'); /* 画像のパスを指定 */
+            background-size: cover;
+            background-position: center;
+            height: 300px;
         }
 
-        .door {
+        .title {
             position: absolute;
-            width: 50%;
-            height: 100%;
-            background-color: #e6e6e6;
-            border: 2px solid black;
-            transition: all 3s ease;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            color: white; /* 文字色を白に */
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black; /* 黒いふち */
         }
 
-        .door.left {
-            left: 0;
-            z-index: 1;
-        }
-
-        .door.right {
-            right: 0;
-            z-index: 1;
-        }
-
-        .glass {
-            position: absolute;
-            top: 20%;
-            left: 10%;
-            width: 80%;
-            height: 50%;
-            background-color: rgba(173, 216, 230, 0.7);
-            border-radius: 5px;
-            border: 2px solid black;
-            z-index: 2;
-        }
-
-        .line-color {
-            position: absolute;
-            bottom: 15%;
-            height: 10%;
-            width: 100%;
-            z-index: 3;
-        }
-
-        .line-color .half {
-            width: 100%;
-            height: 50%;
-        }
-
-        .button-container {
-            margin-top: 20px;
+        /* 白背景 */
+        .content {
+            background-color: white;
+            padding: 20px;
             text-align: center;
         }
 
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4CAF50;
+        /* ボタンスタイル */
+        .button {
+            background-color: #87CEEB; /* 水色 */
             color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: block; /* ボタンを改行 */
+            font-size: 16px;
+            margin: 10px auto; /* 中央に配置 */
+            width: 200px;
+            border-radius: 4px;
         }
 
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .selector {
-            margin-bottom: 10px;
+        .button:hover {
+            background-color: #66b3cc; /* ホバー時の色 */
         }
     </style>
 </head>
 <body>
 
-    <div class="selector">
-        <label for="train-line">路線を選択:</label>
-        <select id="train-line">
-            <option value="keihin">京浜東北線</option>
-            <option value="chuo">中央・総武線</option>
-            <option value="tokaido">東海道線（東日本）</option>
-            <option value="saikyo">埼京線</option>
-            <option value="keiyo">京葉線</option>
-            <option value="yokosuka">横須賀線・総武快速線</option>
-            <option value="yokohama">横浜線</option>
-            <option value="yamanote">山手線</option>
-            <option value="musashino">武蔵野線</option>
-            <option value="tozai">東京メトロ東西線</option>
-            <option value="tokaido-tokai">東海道線（JR東海）</option>
-            <option value="keikyu">京急線</option>
-        </select>
+    <!-- ヘッダー画像とタイトル -->
+    <div class="header">
+        <div class="title">鉄道シュミレーター</div>
     </div>
 
-    <div class="door-container">
-        <div class="door left">
-            <div class="glass"></div>
-            <div class="line-color"></div>
-        </div>
-        <div class="door right">
-            <div class="glass"></div>
-            <div class="line-color"></div>
-        </div>
+    <!-- 白背景のコンテンツ -->
+    <div class="content">
+        <a href="simulation-page.html" class="button">スタート</a>
+        <a href="index.html" class="button">ホームページに戻る</a>
     </div>
-
-    <div class="button-container">
-        <button id="toggle-door">ドアを開ける</button>
-    </div>
-
-    <!-- 音声ファイル -->
-    <audio id="door-sound" src="door-open-close-sound.mp3" preload="auto"></audio>
-    <audio id="keikyu-sound" src="keikyu-door-sound.mp3" preload="auto"></audio>
-    <audio id="musashino-sound" src="musashino-door-sound.mp3" preload="auto"></audio>
-
-    <script>
-        let isDoorOpen = false;
-
-        const toggleButton = document.getElementById('toggle-door');
-        const leftDoor = document.querySelector('.door.left');
-        const rightDoor = document.querySelector('.door.right');
-        const lineSelector = document.getElementById('train-line');
-        const doorSound = document.getElementById('door-sound');
-        const keikyuSound = document.getElementById('keikyu-sound');
-        const musashinoSound = document.getElementById('musashino-sound');
-
-        // ラインカラーとドアの色更新関数
-        function updateLineColor(line) {
-            const singleColors = {
-                keihin: '#007bb8',    // 青
-                chuo: '#ffd400',      // 黄色
-                tokaido: null,        // 東海道線（2色）
-                saikyo: '#008000',    // 緑
-                keiyo: '#ff4500',     // 赤
-                yokosuka: null,       // 横須賀線・総武快速線（2色）
-                yokohama: '#9acd32',  // 黄緑
-                yamanote: '#32cd32',  // 山手線 緑色
-                musashino: '#ffa500', // オレンジ
-                tozai: '#0000ff',     // 青
-                'tokaido-tokai': '#ff8c00', // オレンジ
-                keikyu: '#ff0000'     // 赤
-            };
-
-            const multiColors = {
-                tokaido: ['#ff8c00', '#008000'], // オレンジ・緑
-                yokosuka: ['#ffffff', '#007bb8'] // 白・青
-            };
-
-            leftDoor.style.background = '#e6e6e6';
-            rightDoor.style.background = '#e6e6e6';
-
-            if (line === 'yamanote') {
-                // 山手線のドアを黄緑に設定
-                leftDoor.style.background = '#32cd32';
-                rightDoor.style.background = '#32cd32';
-            }
-
-            const leftLine = leftDoor.querySelector('.line-color');
-            const rightLine = rightDoor.querySelector('.line-color');
-
-            leftLine.innerHTML = '';
-            rightLine.innerHTML = '';
-
-            if (singleColors[line]) {
-                leftLine.style.background = singleColors[line];
-                rightLine.style.background = singleColors[line];
-            } else if (multiColors[line]) {
-                const [color1, color2] = multiColors[line];
-                leftLine.innerHTML = `
-                    <div class="half" style="background: ${color1}"></div>
-                    <div class="half" style="background: ${color2}"></div>
-                `;
-                rightLine.innerHTML = `
-                    <div class="half" style="background: ${color1}"></div>
-                    <div class="half" style="background: ${color2}"></div>
-                `;
-            }
-        }
-
-        toggleButton.addEventListener('click', function () {
-            if (isDoorOpen) {
-                leftDoor.style.left = '0';
-                rightDoor.style.right = '0';
-                toggleButton.textContent = 'ドアを開ける';
-            } else {
-                leftDoor.style.left = '-50%';
-                rightDoor.style.right = '-50%';
-                toggleButton.textContent = 'ドアを閉める';
-            }
-
-            // 音声ファイルの再生
-            if (lineSelector.value === 'keikyu') {
-                keikyuSound.play(); // 京急線専用音
-            } else if (lineSelector.value === 'musashino') {
-                musashinoSound.play(); // 武蔵野線専用音
-            } else {
-                doorSound.play(); // 他の音
-            }
-
-            isDoorOpen = !isDoorOpen;
-        });
-
-        lineSelector.addEventListener('change', function () {
-            updateLineColor(lineSelector.value);
-        });
-
-        // 初期表示
-        updateLineColor(lineSelector.value);
-    </script>
 
 </body>
-</html> 　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　
+</html>
