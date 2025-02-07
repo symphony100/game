@@ -22,7 +22,9 @@
             margin-top: 10px;
         }
         #soundToggle {
-            margin-top: 20px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
             padding: 10px 20px;
             font-size: 1.2em;
             background-color: #32CD32;
@@ -39,11 +41,9 @@
             left: 50%;
             transform: translate(-50%, -50%);
             display: block;
-            opacity: 0; /* 初めは透明 */
-            animation: fadeInOut 3s ease-in-out infinite; /* アニメーション */
+            opacity: 0;
+            animation: fadeInOut 3s ease-in-out infinite;
         }
-
-        /* タップしてスタートのアニメーション */
         @keyframes fadeInOut {
             0% {
                 opacity: 0;
@@ -64,17 +64,12 @@
     <h1>ブロック崩しゲーム</h1>
     <canvas id="gameCanvas" width="480" height="320"></canvas>
     <div id="info">スコア: <span id="score">0</span> | レベル: <span id="level">1</span></div>
+    <button id="soundToggle" onclick="toggleSound()">音をオフ</button>
+    <div id="tapMessage">タップしてスタート</div>
 
-    <!-- 音の設定 -->
     <audio id="bounceSound" src="bounce.mp3" preload="auto"></audio>
     <audio id="breakSound" src="break.mp3" preload="auto"></audio>
     <audio id="gameOverSound" src="gameover.mp3" preload="auto"></audio>
-
-    <!-- 音ON/OFFボタン -->
-    <button id="soundToggle" onclick="toggleSound()">音をオフ</button>
-
-    <!-- タップしてスタートメッセージ -->
-    <div id="tapMessage">タップしてスタート</div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -96,20 +91,17 @@
         let blockOffsetLeft = 30;
         let blocks = [];
 
-        // 音の読み込み
         const bounceSound = document.getElementById("bounceSound");
         const breakSound = document.getElementById("breakSound");
         const gameOverSound = document.getElementById("gameOverSound");
 
-        let isSoundOn = true; // 音のON/OFFフラグ
+        let isSoundOn = true;
 
-        // 音ON/OFFの切り替え
         function toggleSound() {
             isSoundOn = !isSoundOn;
             document.getElementById("soundToggle").innerText = isSoundOn ? "音をオフ" : "音をオン";
         }
 
-        // ブロックの生成
         function generateBlocks() {
             blocks = [];
             let placedBlocks = 0;
@@ -126,7 +118,6 @@
             }
         }
 
-        // ボール描画
         function drawBall() {
             ctx.beginPath();
             ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
@@ -135,7 +126,6 @@
             ctx.closePath();
         }
 
-        // パドル描画
         function drawPaddle() {
             ctx.beginPath();
             ctx.rect(paddle.x, canvas.height - paddle.height, paddle.width, paddle.height);
@@ -144,7 +134,6 @@
             ctx.closePath();
         }
 
-        // ブロック描画
         function drawBlocks() {
             for (let c = 0; c < blockColumnCount; c++) {
                 if (blocks[c]) {
@@ -162,7 +151,6 @@
             }
         }
 
-        // 衝突検出
         function collisionDetection() {
             for (let c = 0; c < blockColumnCount; c++) {
                 if (blocks[c]) {
@@ -175,7 +163,6 @@
                                 score += 10;
                                 document.getElementById("score").innerText = score;
 
-                                // 衝突時に音を鳴らす
                                 if (isSoundOn) breakSound.play();
 
                                 if (checkClearCondition()) {
@@ -189,7 +176,6 @@
             }
         }
 
-        // レベルクリアの判定
         function checkClearCondition() {
             for (let c = 0; c < blockColumnCount; c++) {
                 if (blocks[c]) {
@@ -203,7 +189,6 @@
             return true;
         }
 
-        // ゲーム開始
         function startGame() {
             gameOver = false;
             score = 0;
@@ -213,15 +198,12 @@
             generateBlocks();
             draw();
 
-            // キー操作のイベントリスナーをここで追加
             document.addEventListener("keydown", keyDownHandler, false);
             document.addEventListener("keyup", keyUpHandler, false);
 
-            // 「タップしてスタート」メッセージを非表示にする
             document.getElementById("tapMessage").style.display = 'none';
         }
 
-        // ゲーム描画
         function draw() {
             if (gameOver) return;
 
@@ -231,23 +213,20 @@
             drawBlocks();
             collisionDetection();
 
-            // ボールとパドルの衝突検出
             if (ball.x + ball.dx > canvas.width - ballRadius || ball.x + ball.dx < ballRadius) {
                 ball.dx = -ball.dx;
-                if (isSoundOn) bounceSound.play();  // ボールが壁に当たった音
+                if (isSoundOn) bounceSound.play();
             }
             if (ball.y + ball.dy < ballRadius) {
                 ball.dy = -ball.dy;
-                if (isSoundOn) bounceSound.play();  // ボールが上に当たった音
+                if (isSoundOn) bounceSound.play();
             } else if (ball.y + ball.dy > canvas.height - ballRadius) {
-                // ボールがパドルに当たるか、下に落ちた場合
                 if (ball.x > paddle.x && ball.x < paddle.x + paddle.width) {
-                    ball.dy = -ball.dy;  // パドルで跳ね返す
-                    if (isSoundOn) bounceSound.play();  // ボールがパドルに当たった音
+                    ball.dy = -ball.dy;
+                    if (isSoundOn) bounceSound.play();
                 } else {
-                    // ゲームオーバー
                     gameOver = true;
-                    if (isSoundOn) gameOverSound.play();  // ゲームオーバー音
+                    if (isSoundOn) gameOverSound.play();
                     alert("ゲームオーバー！");
                     return;
                 }
@@ -256,7 +235,6 @@
             ball.x += ball.dx;
             ball.y += ball.dy;
 
-            // パドルの移動範囲制限
             if (rightPressed && paddle.x < canvas.width - paddle.width) {
                 paddle.x += paddle.speed;
             }
@@ -267,19 +245,22 @@
             requestAnimationFrame(draw);
         }
 
-        // レベル進行
         function nextLevel() {
             level++;
             document.getElementById("level").innerText = level;
+
+            // レベルが上がっても速さやパドルのサイズは変更しない
             generateBlocks();
             ball.x = canvas.width / 2;
             ball.y = canvas.height - 30;
-            ball.dx = 2;
+
+            // ボールの速さはレベルに関係なく一定にする
+            ball.dx = 2;  
             ball.dy = -2;
+
             startGame();
         }
 
-        // キーが押されたときの処理
         function keyDownHandler(e) {
             if (e.key === "Right" || e.key === "ArrowRight") {
                 rightPressed = true;
@@ -288,7 +269,6 @@
             }
         }
 
-        // キーが離されたときの処理
         function keyUpHandler(e) {
             if (e.key === "Right" || e.key === "ArrowRight") {
                 rightPressed = false;
@@ -297,9 +277,7 @@
             }
         }
 
-        // 画面タップでゲーム開始
         canvas.addEventListener("click", startGame);
-
     </script>
 </body>
 </html>
