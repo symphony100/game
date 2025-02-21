@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>迷路ゲーム</title>
+    <style>
+        canvas {
+            border: 2px solid black;
+            display: block;
+            margin: 10px auto;
+        }
+        h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+  <h2>迷路ゲーム</h2>
+    <h2 id="stageDisplay">ステージ: 1</h2>
+    <canvas id="mazeCanvas"></canvas> <!-- 幅と高さをJavaScriptで設定する -->
+    <script>
+        const canvas = document.getElementById("mazeCanvas");
+        const ctx = canvas.getContext("2d");
+        const stageDisplay = document.getElementById("stageDisplay");
+
+        const tileSize = 32;
+        const mazeSize = 11; // 奇数サイズで生成
+        let currentStage = 1;
+        let maze;
+        let player;
+        let goal;
+
+        // 迷路をランダム生成（必ずゴールまでの道がある）
+        function generateMaze(size) {
+            let newMaze = Array.from({ length: size }, () => Array(size).fill(1));
+
+            function carve(x, y) {
+                newMaze[y][x] = 0;
+                let directions = [
+                    [0, -2], [0, 2], [-2, 0], [2, 0]
+                ].sort(() => Math.random() - 0.5);
+
+                for (let [dx, dy] of directions) {
+                    let nx = x + dx, ny = y + dy;
+                    if (ny > 0 && ny < size - 1 && nx > 0 && nx < size - 1 && newMaze[ny][nx] === 1) {
+                        newMaze[y + dy / 2][x + dx / 2] = 0;
+                        carve(nx, ny);
+                    }
+                }
+            }
+
+            // 必ず道ができるように迷路を掘る
+            carve(1, 1);
+            newMaze[1][1] = 0; // スタート
+            newMaze[size - 2][size - 2] = 0; // ゴール
+
+            return newMaze;
+        }
+
+        function initGame() {
+            maze = generateMaze(mazeSize);
+            player = { x: 1, y: 1 };
+            goal = { x: mazeSize - 2, y: mazeSize - 2 };
+            stageDisplay.textContent = `ステージ: ${currentStage}`;
+            canvas.width = mazeSize * tileSize;  // canvasの幅をタイル数×タイルサイズに設定
+            canvas.height = mazeSize * tileSize; // canvasの高さをタイル数×タイルサイズに設定
+            drawMaze();
+        }
+
+        function drawMaze() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let y = 0; y < maze.length; y++) {
+                for (let x = 0; x < maze[y].length; x++) {
+                    ctx.fillStyle = maze[y][x] === 1 ? "black" : "white";
+                    ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+                }
+            }
+            ctx.fillStyle = "blue";
+            ctx.fillRect(player.x * tileSize, player.y * tileSize, tileSize, tileSize);
+
+            ctx.fillStyle = "red";
+            ctx.fillRect(goal.x * tileSize, goal.y * tileSize, tileSize, tileSize);
+        }
+
+        function movePlayer(dx, dy) {
+            const newX = player.x + dx;
+            const newY = player.y + dy;
+
+            if (maze[newY][newX] === 0) {
+                player.x = newX;
+                player.y = newY;
+            }
+
+            drawMaze();
+
+            if (player.x === goal.x && player.y === goal.y) {
+                currentStage++;
+                initGame();
+            }
+        }
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowUp") movePlayer(0, -1);
+            if (event.key === "ArrowDown") movePlayer(0, 1);
+            if (event.key === "ArrowLeft") movePlayer(-1, 0);
+            if (event.key === "ArrowRight") movePlayer(1, 0);
+        });
+
+        initGame();
+    </script>
+</body>
+</html>
