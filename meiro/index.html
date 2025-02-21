@@ -19,6 +19,12 @@
   <h2>迷路ゲーム</h2>
     <h2 id="stageDisplay">ステージ: 1</h2>
     <canvas id="mazeCanvas"></canvas> <!-- 幅と高さをJavaScriptで設定する -->
+    <div class="controls">
+     <button id="upButton">↑</button><br>
+     <button id="leftButton">←</button>
+     <button id="rightButton">→</button><br>
+     <button id="downButton">↓</button>
+    </div>
     <script>
         const canvas = document.getElementById("mazeCanvas");
         const ctx = canvas.getContext("2d");
@@ -108,6 +114,11 @@
         });
 
         initGame();
+            // 画面上のボタンでも動かせるようにする
+    document.getElementById("upButton").addEventListener("click", () => movePlayer(0, -1));
+    document.getElementById("downButton").addEventListener("click", () => movePlayer(0, 1));
+    document.getElementById("leftButton").addEventListener("click", () => movePlayer(-1, 0));
+    document.getElementById("rightButton").addEventListener("click", () => movePlayer(1, 0));
     </script>
 </body>
 </html>
