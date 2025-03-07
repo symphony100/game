@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クリックスピードゲーム</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        #game-area {
+            margin-top: 50px;
+        }
+        .click-button {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            background-color: #ff5722;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .click-button:hover {
+            background-color: #e64a19;
+        }
+        #restart-btn {
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #2196f3;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #restart-btn:hover {
+            background-color: #1976d2;
+        }
+        #ranking {
+            margin-top: 20px;
+        }
+        .rank-item {
+            font-size: 18px;
+            background-color: white;
+            padding: 5px;
+            margin: 5px auto;
+            width: 200px;
+            border-radius: 5px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>クリックスピードゲーム</h1>
+    <p>ボタンをできるだけ早くクリックしよう！</p>
+    <div id="game-area">
+        <button id="click-btn" class="click-button" style="display: none;">クリック！</button>
+    </div>
+    <p>スコア: <span id="score">0</span></p>
+    <p>時間: <span id="time">10</span>秒</p>
+    <button id="restart-btn">ゲーム開始</button>
+    
+    <h2>ランキング</h2>
+    <div id="ranking"></div>
+    
+    <script>
+        let score = 0;
+        let time = 10;
+        let timer;
+        let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+        const clickBtn = document.getElementById("click-btn");
+        const restartBtn = document.getElementById("restart-btn");
+        const rankingDiv = document.getElementById("ranking");
+        
+        clickBtn.addEventListener("click", function() {
+            if (time > 0) {
+                score++;
+                document.getElementById("score").textContent = score;
+            }
+        });
+        
+        function updateRanking() {
+            if (rankings.length < 5 || score > rankings[rankings.length - 1].score) {
+                let playerName;
+                do {
+                    playerName = prompt("ランキング入り！名前を入力してください:", "名無し");
+                } while (!playerName);
+                rankings.push({ name: playerName, score: score });
+                rankings.sort((a, b) => b.score - a.score);
+                rankings = rankings.slice(0, 5);
+                localStorage.setItem("rankings", JSON.stringify(rankings));
+            }
+            rankingDiv.innerHTML = "";
+            rankings.forEach((entry, index) => {
+                const rankItem = document.createElement("div");
+                rankItem.className = "rank-item";
+                rankItem.textContent = `${index + 1}位: ${entry.name} - ${entry.score}点`;
+                rankingDiv.appendChild(rankItem);
+            });
+        }
+        
+        function startGame() {
+            score = 0;
+            time = 10;
+            document.getElementById("score").textContent = score;
+            document.getElementById("time").textContent = time;
+            clickBtn.style.display = "inline-block";
+            restartBtn.style.display = "none";
+            
+            timer = setInterval(() => {
+                if (time > 0) {
+                    time--;
+                    document.getElementById("time").textContent = time;
+                } else {
+                    clearInterval(timer);
+                    alert("ゲーム終了！スコア: " + score);
+                    clickBtn.style.display = "none";
+                    restartBtn.style.display = "inline-block";
+                    updateRanking();
+                }
+            }, 1000);
+        }
+        
+        restartBtn.addEventListener("click", startGame);
+        updateRanking();
+    </script>
+</body>
+</html>
